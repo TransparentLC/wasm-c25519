@@ -3,7 +3,9 @@ const fs = require('fs');
 const os = require('os');
 const ReplacementCollector = require('./replacement-collector.js');
 
-fs.rmSync('dist', { recursive: true });
+if (fs.existsSync('dist')) {
+    fs.rmSync('dist', { recursive: true });
+}
 fs.mkdirSync('dist');
 
 for (const [optimizeMode, optimizeParam] of [

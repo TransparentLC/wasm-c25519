@@ -115,6 +115,7 @@ console.log(Ed25519.verify(messageC, signC, publicC));
 messageC[0]++;
 // false
 console.log(Ed25519.verify(messageC, signC, publicC));
+
 })()
 ```
 
