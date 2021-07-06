@@ -1,0 +1,40 @@
+name: build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Emscripten
+        uses: mymindstorm/setup-emsdk@v7
+        with:
+          version: latest
+          no-cache: true
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.x
+          architecture: x64
+      - name: Install dependencies
+        run: |
+          npm install -g terser
+          pip install donna25519==0.1.* ed25519==1.*
+      - name: Build wasm-c25519
+        run: node build.js
+      - name: Test
+        run: node test-standard.js
+      - name: Benchmark
+        run: |
+          python test-massive-generate.py
+          node test-massive.js
+      - name: Upload result
+        uses: actions/upload-artifact@v2
+        with:
+          name: wasm-c25519
+          path: dist/
