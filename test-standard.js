@@ -1,3 +1,11 @@
+if (typeof btoa === 'undefined') {
+    global.btoa = str => Buffer.from(str, 'binary').toString('base64');
+}
+
+if (typeof atob === 'undefined') {
+    global.atob = b64Encoded => Buffer.from(b64Encoded, 'base64').toString('binary');
+}
+
 const {
     X25519: X25519Size,
     Ed25519: Ed25519Size,

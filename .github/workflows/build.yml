@@ -26,7 +26,9 @@ jobs:
           npm install -g terser
           pip install donna25519==0.1.* ed25519==1.*
       - name: Build wasm-c25519
-        run: node build.js
+        run: |
+          node build.js
+          ls -l dist
       - name: Test
         run: node test-standard.js
       - name: Benchmark
