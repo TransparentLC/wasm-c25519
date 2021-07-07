@@ -1,10 +1,13 @@
 name: build
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - master
+  workflow_dispatch:
+    inputs:
+      release:
+        description: Input something to release an automated build
 
 jobs:
   build:
@@ -40,3 +43,21 @@ jobs:
         with:
           name: wasm-c25519
           path: dist/
+      - name: Release automated build
+        if: ${{ github.event.inputs.release }}
+        run: |
+          export BUILD_TIME=$(date +%Y%m%d-%H%I%S)
+          echo "release_name=Automated build $(BUILD_TIME)" >> $GITHUB_ENV
+          echo "tag_name=autobuild-$(BUILD_TIME)" >> $GITHUB_ENV
+          cd dist
+          zip -9 -r "../autobuild-$(BUILD_TIME).zip" .
+          cd ..
+      - uses: softprops/action-gh-release@v1
+        if: ${{ github.event.inputs.release }}
+        with:
+          name: ${{ env.release_name }}
+          tag_name: ${{ env.tag_name }}
+          prerelease: true
+          files: autobuild-$(BUILD_TIME).zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
