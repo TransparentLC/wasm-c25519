@@ -2,7 +2,7 @@
 
 [![build](https://github.com/TransparentLC/wasm-c25519/actions/workflows/build.yml/badge.svg)](https://github.com/TransparentLC/wasm-c25519/actions/workflows/build.yml)
 
-使用 WASM 运行的 X25519 密钥交换算法和 Ed25519 数字签名算法，预编译版可在 [Actions](https://github.com/TransparentLC/wasm-c25519/actions/workflows/build.yml) 或 [nightly.link](https://nightly.link/TransparentLC/wasm-c25519/workflows/build/master/wasm-c25519) 下载。
+使用 WASM 运行的 X25519 密钥交换算法和 Ed25519 数字签名算法，预编译版可在 [Releases](https://github.com/TransparentLC/wasm-c25519/releases) 下载。
 
 实现来自 [Daniel Beer 的“Curve25519 and Ed25519 for low-memory systems”](https://www.dlbeer.co.nz/oss/c25519.html)。
 
