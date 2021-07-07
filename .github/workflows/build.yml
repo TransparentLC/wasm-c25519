@@ -35,10 +35,12 @@ jobs:
       - name: Test
         run: node test-standard.js
       - name: Benchmark
+        if: ${{ !github.event.inputs.release }}
         run: |
           python test-massive-generate.py
           node test-massive.js
       - name: Upload result
+        if: ${{ !github.event.inputs.release }}
         uses: actions/upload-artifact@v2
         with:
           name: wasm-c25519
@@ -49,6 +51,7 @@ jobs:
           export BUILD_TIME=$(date +%Y%m%d-%H%I%S)
           echo "release_name=Automated build $BUILD_TIME" >> $GITHUB_ENV
           echo "tag_name=autobuild-$BUILD_TIME" >> $GITHUB_ENV
+          echo "file_name=autobuild-$BUILD_TIME.zip" >> $GITHUB_ENV
           cd dist
           zip -9 -r "../autobuild-$BUILD_TIME.zip" .
           cd ..
@@ -58,6 +61,6 @@ jobs:
           name: ${{ env.release_name }}
           tag_name: ${{ env.tag_name }}
           prerelease: true
-          files: autobuild-$BUILD_TIME.zip
+          files: ${{ env.file_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
