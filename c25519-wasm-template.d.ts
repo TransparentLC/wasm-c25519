@@ -1,6 +1,6 @@
 export class X25519 {
     static getPublic(privateKey: Uint8Array): Uint8Array
-    static getShared(publicKey: Uint8Array, privateKey: Uint8Array): Uint8Array
+    static getShared(privateKey: Uint8Array, publicKey: Uint8Array): Uint8Array
     static ready: Promise<void>
 }
 

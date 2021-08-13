@@ -17,11 +17,11 @@ class X25519 {
     static getPublic(privateKey) {}
 
     /**
-     * @param {Uint8Array} publicKey 32字节的对方的公钥
      * @param {Uint8Array} privateKey 32字节的私钥
+     * @param {Uint8Array} publicKey 32字节的对方的公钥
      * @returns {Uint8Array} 32字节的共享密钥
      */
-    static getShared(publicKey, privateKey) {}
+    static getShared(privateKey, publicKey) {}
 
     /** @type {Promise<void>} 在WASM模块加载完成后fulfill的Promise */
     static ready,

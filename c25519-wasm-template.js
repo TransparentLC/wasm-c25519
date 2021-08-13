@@ -9,10 +9,9 @@ const {
 } = GLOBAL;
 
 const wasmMemory = new WebAssembly.Memory({
-    'initial': 0,
+    'initial': 1,
 });
-/** @type {Uint8Array} */
-let wasmHeapU8;
+let wasmHeapU8 = new Uint8Array(wasmMemory.buffer);
 /**
  * @param {Number} size
  */
@@ -22,7 +21,6 @@ const wasmMemoryAlloc = size => {
     wasmMemory['grow'](Math.ceil((size - wasmMemoryLength) / 65536));
     wasmHeapU8 = new Uint8Array(wasmMemory.buffer);
 };
-wasmMemoryAlloc(1);
 const $memoryStackPointer = 0x01000;
 const $memoryFreeArea = 0x01000;
 
@@ -74,13 +72,13 @@ const X25519 = {
         return wasmHeapU8.slice($memoryFreeArea + 32, $memoryFreeArea + 64);
     },
     /**
-     * @param {Uint8Array} publicKey 32 bytes
      * @param {Uint8Array} privateKey 32 bytes
+     * @param {Uint8Array} publicKey 32 bytes
      * @returns {Uint8Array} 32 bytes
      */
-    'getShared': (publicKey, privateKey) => {
-        wasmHeapU8.set(publicKey, $memoryFreeArea);
-        wasmHeapU8.set(privateKey, $memoryFreeArea + 32);
+    'getShared': (privateKey, publicKey) => {
+        wasmHeapU8.set(privateKey, $memoryFreeArea);
+        wasmHeapU8.set(publicKey, $memoryFreeArea + 32);
         wasmExports['$$WASMEXPORTS_c25519_smult$$']($memoryFreeArea + 64, $memoryFreeArea + 32, $memoryFreeArea);
         return wasmHeapU8.slice($memoryFreeArea + 64, $memoryFreeArea + 96);
     },
