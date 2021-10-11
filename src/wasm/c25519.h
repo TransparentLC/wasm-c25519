@@ -12,8 +12,8 @@
 #include "f25519.h"
 
 #include "emscripten-exports.h"
-#define c25519_smult $$WASMEXPORTS_c25519_smult$$
-#define c25519_sbasemult $$WASMEXPORTS_c25519_sbasemult$$
+#define c25519_smult __WASMEXPORTS_c25519_smult__
+#define c25519_sbasemult __WASMEXPORTS_c25519_sbasemult__
 
 /* Curve25519 has the equation over F(p = 2^255-19):
  *

@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 const xmur3 = h => () => {
     h = Math.imul(h ^ h >>> 16, 0x85EBCA6B);
     h = Math.imul(h ^ h >>> 13, 0xC2B2AE35);
@@ -96,6 +94,28 @@ class ReplacementCollector {
             }
         }
         return str;
+    }
+
+    /**
+     * @returns {String[]}
+     */
+    exportEmscriptenDefine() {
+        const result = [];
+        for (const [key, value] of this.mapping[Symbol.iterator]()) {
+            result.push('-D', `${key}=${value}`);
+        }
+        return result;
+    }
+
+    /**
+     * @returns {Object}
+     */
+    exportTerserDefine() {
+        const result = {};
+        for (const [key, value] of this.mapping[Symbol.iterator]()) {
+            result[`@${key}`] = JSON.stringify(value);
+        }
+        return result;
     }
 }
 

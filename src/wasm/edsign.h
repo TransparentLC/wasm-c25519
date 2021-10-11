@@ -11,9 +11,9 @@
 #include <stddef.h>
 
 #include "emscripten-exports.h"
-#define edsign_sec_to_pub $$WASMEXPORTS_edsign_sec_to_pub$$
-#define edsign_sign $$WASMEXPORTS_edsign_sign$$
-#define edsign_verify $$WASMEXPORTS_edsign_verify$$
+#define edsign_sec_to_pub __WASMEXPORTS_edsign_sec_to_pub__
+#define edsign_sign __WASMEXPORTS_edsign_sign__
+#define edsign_verify __WASMEXPORTS_edsign_verify__
 
 /* This is the Ed25519 signature system, as described in:
  *

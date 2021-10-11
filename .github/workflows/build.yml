@@ -18,15 +18,21 @@ jobs:
         uses: mymindstorm/setup-emsdk@v7
         with:
           version: latest
-          no-cache: true
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
           python-version: 3.x
           architecture: x64
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.npm
+          key: ${{ runner.os }}-${{ hashFiles('**/package.json') }}
       - name: Install dependencies
         run: |
-          npm install -g terser
+          npm install
           pip install donna25519==0.1.* ed25519==1.*
       - name: Build wasm-c25519
         run: |

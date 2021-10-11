@@ -1,5 +1,3 @@
-(() => {
-
 /** @type {globalThis} */
 const GLOBAL = typeof globalThis !== 'undefined' ? globalThis : (global || self);
 
@@ -29,18 +27,18 @@ const $memoryFreeArea = 0x01000;
 /** @type {WebAssembly.Exports} */
 /**
  * @type {{
- *  $$WASMEXPORTS_c25519_smult$$(sharedKey: Pointer, publicKey: Pointer, privateKey: Pointer) => void,
- *  $$WASMEXPORTS_c25519_sbasemult$$(publicKey: Pointer, privateKey: Pointer) => void,
- *  $$WASMEXPORTS_edsign_sec_to_pub$$(publicKey: Pointer, privateKey: Pointer) => void,
- *  $$WASMEXPORTS_edsign_sign$$(sign: Pointer, publicKey: Pointer, privateKey: Pointer, message: Pointer, len: Number) => void,
- *  $$WASMEXPORTS_edsign_verify$$(sign: Pointer, publicKey: Pointer, message: Pointer, len: Number) => Number,
+ *  __WASMEXPORTS_c25519_smult__(sharedKey: Pointer, publicKey: Pointer, privateKey: Pointer) => void,
+ *  __WASMEXPORTS_c25519_sbasemult__(publicKey: Pointer, privateKey: Pointer) => void,
+ *  __WASMEXPORTS_edsign_sec_to_pub__(publicKey: Pointer, privateKey: Pointer) => void,
+ *  __WASMEXPORTS_edsign_sign__(sign: Pointer, publicKey: Pointer, privateKey: Pointer, message: Pointer, len: Number) => void,
+ *  __WASMEXPORTS_edsign_verify__(sign: Pointer, publicKey: Pointer, message: Pointer, len: Number) => Number,
  * }}
  */
 let wasmExports;
 /** @type {Promise<void>} */
 const wasmReady = new Promise(resolve => WebAssembly
     .instantiate(
-        Uint8Array.from(atob('$$WASM_BASE64$$'), e => e.charCodeAt()),
+        Uint8Array.from(atob(__WASM_BASE64__), e => e.charCodeAt()),
         {
             'env': {
                 'memory': wasmMemory,
@@ -68,7 +66,7 @@ const X25519 = {
      */
     'getPublic': privateKey => {
         wasmHeapU8.set(privateKey, $memoryFreeArea);
-        wasmExports['$$WASMEXPORTS_c25519_sbasemult$$']($memoryFreeArea + 32, $memoryFreeArea)
+        wasmExports[__WASMEXPORTS_c25519_sbasemult__]($memoryFreeArea + 32, $memoryFreeArea)
         return wasmHeapU8.slice($memoryFreeArea + 32, $memoryFreeArea + 64);
     },
     /**
@@ -79,7 +77,7 @@ const X25519 = {
     'getShared': (privateKey, publicKey) => {
         wasmHeapU8.set(privateKey, $memoryFreeArea);
         wasmHeapU8.set(publicKey, $memoryFreeArea + 32);
-        wasmExports['$$WASMEXPORTS_c25519_smult$$']($memoryFreeArea + 64, $memoryFreeArea + 32, $memoryFreeArea);
+        wasmExports[__WASMEXPORTS_c25519_smult__]($memoryFreeArea + 64, $memoryFreeArea + 32, $memoryFreeArea);
         return wasmHeapU8.slice($memoryFreeArea + 64, $memoryFreeArea + 96);
     },
     /** @type {Promise<void>} */
@@ -93,7 +91,7 @@ const Ed25519 = {
      */
     'getPublic': privateKey => {
         wasmHeapU8.set(privateKey, $memoryFreeArea);
-        wasmExports['$$WASMEXPORTS_edsign_sec_to_pub$$']($memoryFreeArea + 32, $memoryFreeArea);
+        wasmExports[__WASMEXPORTS_edsign_sec_to_pub__]($memoryFreeArea + 32, $memoryFreeArea);
         return wasmHeapU8.slice($memoryFreeArea + 32, $memoryFreeArea + 64);
     },
     /**
@@ -105,8 +103,8 @@ const Ed25519 = {
         wasmMemoryAlloc($memoryFreeArea + 128 + message.length);
         wasmHeapU8.set(privateKey, $memoryFreeArea);
         wasmHeapU8.set(message, $memoryFreeArea + 128);
-        wasmExports['$$WASMEXPORTS_edsign_sec_to_pub$$']($memoryFreeArea + 32, $memoryFreeArea);
-        wasmExports['$$WASMEXPORTS_edsign_sign$$']($memoryFreeArea + 64, $memoryFreeArea + 32, $memoryFreeArea, $memoryFreeArea + 128, message.length);
+        wasmExports[__WASMEXPORTS_edsign_sec_to_pub__]($memoryFreeArea + 32, $memoryFreeArea);
+        wasmExports[__WASMEXPORTS_edsign_sign__]($memoryFreeArea + 64, $memoryFreeArea + 32, $memoryFreeArea, $memoryFreeArea + 128, message.length);
         return wasmHeapU8.slice($memoryFreeArea + 64, $memoryFreeArea + 128);
     },
     /**
@@ -120,20 +118,8 @@ const Ed25519 = {
         wasmHeapU8.set(publicKey, $memoryFreeArea);
         wasmHeapU8.set(sign, $memoryFreeArea + 32);
         wasmHeapU8.set(message, $memoryFreeArea + 96);
-        return !!wasmExports['$$WASMEXPORTS_edsign_verify$$']($memoryFreeArea + 32, $memoryFreeArea, $memoryFreeArea + 96, message.length);
+        return !!wasmExports[__WASMEXPORTS_edsign_verify__]($memoryFreeArea + 32, $memoryFreeArea, $memoryFreeArea + 96, message.length);
     },
     /** @type {Promise<void>} */
     'ready': wasmReady,
 };
-
-if (typeof module !== 'undefined') {
-    module.exports = {
-        'X25519': X25519,
-        'Ed25519': Ed25519,
-    };
-} else {
-    GLOBAL['X25519'] = X25519;
-    GLOBAL['Ed25519'] = Ed25519;
-}
-
-})()

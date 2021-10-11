@@ -19,11 +19,11 @@ testTemplate = '''
     const {
         X25519: X25519Size,
         Ed25519: Ed25519Size,
-    } = require('./dist/c25519-wasm.size.min.js');
+    } = require('./dist/c25519-wasm.size.cjs.min.js');
     const {
         X25519: X25519Speed,
         Ed25519: Ed25519Speed,
-    } = require('./dist/c25519-wasm.speed.min.js');
+    } = require('./dist/c25519-wasm.speed.cjs.min.js');
     const { performance } = require('perf_hooks');
 
     let timeStart, timeEnd;

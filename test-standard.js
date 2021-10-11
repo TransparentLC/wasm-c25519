@@ -9,11 +9,11 @@ if (typeof atob === 'undefined') {
 const {
     X25519: X25519Size,
     Ed25519: Ed25519Size,
-} = require('./dist/c25519-wasm.size.min.js');
+} = require('./dist/c25519-wasm.size.cjs.min.js');
 const {
     X25519: X25519Speed,
     Ed25519: Ed25519Speed,
-} = require('./dist/c25519-wasm.speed.min.js');
+} = require('./dist/c25519-wasm.speed.cjs.min.js');
 
 const hexToBytes = e => new Uint8Array(e.match(/[0-9a-f]{2}/gi).map(e => parseInt(e, 16)));
 const bytesToHex = e => Array.from(e).map(e => e.toString(16).padStart(2, 0)).join('');
