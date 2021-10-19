@@ -5,7 +5,7 @@ const ReplacementCollector = require('./src/replacement-collector.js');
 
 (async () => {
 
-await fs.promises.rmdir('dist', { recursive: true });
+await fs.promises.rm('dist', { recursive: true, force: true });
 await fs.promises.mkdir('dist');
 
 const template = await fs.promises.readFile('src/c25519-wasm-template.js', { encoding: 'utf-8' });
@@ -27,28 +27,34 @@ await Promise.all([
         'src/c25519-wasm-template.js'
     ].map(f => fs.promises.readFile(f, { encoding: 'utf-8' }).then(e => rc.collect(e)).catch(() => {})));
 
-    console.log(`${optimizeMode} emcc output:\n`, await new Promise((resolve, reject) => childProcess.execFile(
-        'emcc',
-        [
-            'src/wasm/c25519.c',
-            'src/wasm/ed25519.c',
-            'src/wasm/edsign.c',
-            'src/wasm/f25519.c',
-            'src/wasm/fprime.c',
-            'src/wasm/memcpy.c',
-            'src/wasm/memset.c',
-            'src/wasm/morph25519.c',
-            'src/wasm/sha512.c',
-            optimizeParam,
-            ...otherParam,
-            ...rc.exportEmscriptenDefine(),
-            '-v',
-            '-flto',
-            '-s', 'SIDE_MODULE=2',
-            '-o', `dist/c25519.${optimizeMode}.wasm`,
-        ],
-        (error, stdout, stderr) => error ? reject(error) : resolve(stderr)
-    )));
+    const emccArgs = [
+        'src/wasm/c25519.c',
+        'src/wasm/ed25519.c',
+        'src/wasm/edsign.c',
+        'src/wasm/f25519.c',
+        'src/wasm/fprime.c',
+        'src/wasm/memcpy.c',
+        'src/wasm/memset.c',
+        'src/wasm/morph25519.c',
+        'src/wasm/sha512.c',
+        optimizeParam,
+        ...otherParam,
+        ...rc.exportEmscriptenDefine(),
+        '-v',
+        '-flto',
+        '-s', 'SIDE_MODULE=2',
+        '-o', `dist/c25519.${optimizeMode}.wasm`,
+    ];
+    console.log(`${optimizeMode} emcc output:\n`, await new Promise((resolve, reject) => process.platform === 'win32' ?
+        childProcess.execFile(
+            'cmd', ['/s', '/c', 'emcc', ...emccArgs],
+            (error, stdout, stderr) => error ? reject(error) : resolve(stderr)
+        ) :
+        childProcess.execFile(
+            'emcc', emccArgs,
+            (error, stdout, stderr) => error ? reject(error) : resolve(stderr)
+        )
+    ));
     rc.mapping.set('__WASM_BASE64__', (await fs.promises.readFile(`dist/c25519.${optimizeMode}.wasm`, { encoding: 'base64' })).replace(/=+$/g, ''));
 
     await Promise.all(['cjs', 'esm'].map(async moduleFormat => {
