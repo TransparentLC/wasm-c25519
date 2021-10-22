@@ -18,33 +18,20 @@ jobs:
         uses: mymindstorm/setup-emsdk@v7
         with:
           version: latest
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.x
-          architecture: x64
+          actions-cache-folder: 'emsdk-cache'
       - name: Cache dependencies
         uses: actions/cache@v2
         with:
-          path: |
-            ~/.cache/pip
-            ~/.npm
-          key: ${{ runner.os }}-${{ hashFiles('**/package.json') }}
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
       - name: Install dependencies
-        run: |
-          npm install
-          pip install donna25519==0.1.* ed25519==1.*
+        run: npm install
       - name: Build wasm-c25519
         run: |
           node build.js
           ls -l dist
-      - name: Test
-        run: node test-standard.js
-      - name: Benchmark
-        if: ${{ !github.event.inputs.release }}
-        run: |
-          python test-massive-generate.py
-          node test-massive.js
+      - name: Test and benchmark
+        run: node benchmark.js
       - name: Upload result
         if: ${{ !github.event.inputs.release }}
         uses: actions/upload-artifact@v2

@@ -63,8 +63,23 @@ class ReplacementCollector {
             this.mapping = mapping;
         }
         this.#counter = 0;
-        this.#charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+        this.#charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ$_'.split('');
         this.#seed = (Date.now() & 0xFFFFFFFF) >>> 0;
+    }
+
+    /**
+     * @param {String} key
+     * @returns {String}
+     */
+    add(key) {
+        if (this.mapping.has(key)) {
+            return this.mapping.get(key);
+        } else {
+            const value = baseConvertId(this.#counter, this.#charset, this.#seed);
+            this.mapping.set(key, value);
+            this.#counter++;
+            return value;
+        }
     }
 
     /**
@@ -72,11 +87,7 @@ class ReplacementCollector {
      */
     collect(str) {
         for (const match of str.matchAll(this.#pattern)) {
-            const key = match[0];
-            if (!this.mapping.has(key)) {
-                this.mapping.set(key, baseConvertId(this.#counter, this.#charset, this.#seed));
-                this.#counter++;
-            }
+            this.add(match[0]);
         }
     }
 
@@ -94,28 +105,6 @@ class ReplacementCollector {
             }
         }
         return str;
-    }
-
-    /**
-     * @returns {String[]}
-     */
-    exportEmscriptenDefine() {
-        const result = [];
-        for (const [key, value] of this.mapping[Symbol.iterator]()) {
-            result.push('-D', `${key}=${value}`);
-        }
-        return result;
-    }
-
-    /**
-     * @returns {Object}
-     */
-    exportTerserDefine() {
-        const result = {};
-        for (const [key, value] of this.mapping[Symbol.iterator]()) {
-            result[`@${key}`] = JSON.stringify(value);
-        }
-        return result;
     }
 }
 
