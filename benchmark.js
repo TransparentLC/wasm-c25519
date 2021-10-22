@@ -6,6 +6,8 @@ if (typeof atob === 'undefined') {
     global.atob = b64Encoded => Buffer.from(b64Encoded, 'base64').toString('binary');
 }
 
+const { performance } = require('perf_hooks');
+
 const crypto = require('crypto');
 const {
     X25519: X25519Size,
