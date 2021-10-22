@@ -86,7 +86,7 @@ await Promise.all([
             (await fs.promises.readFile(`src/wrapper/${moduleFormat}.js`, { encoding: 'utf-8' })).replace(/\/\*\* TEMPLATE \*\*\//g, template)
         );
         return Promise.all([
-            fs.promises.writeFile(`dist/c20p1305-wasm.${optimizeMode}.${moduleFormat}.js`, wrappedTemplate),
+            fs.promises.writeFile(`dist/c25519-wasm.${optimizeMode}.${moduleFormat}.js`, wrappedTemplate),
             terser.minify(wrappedTemplate, {
                 ecma: 2020,
                 module: moduleFormat === 'esm',
